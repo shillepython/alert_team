@@ -88,7 +88,11 @@ async def welcome_new_member(message: types.Message):
             link = f"[{new_member.first_name}](https://t.me/{new_member.username})"
         else:
             link = new_member.first_name
-        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.\nЕсли у вас остались вопросы - напишите @moneyimperiaa", parse_mode=types.ParseMode.MARKDOWN)
+
+        keyboard = InlineKeyboardMarkup()
+        button1 = InlineKeyboardButton(text="ТС (Напиши для начала работы)", url='https://t.me/moneyimperiaa')
+        keyboard.add(button1)
+        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.", parse_mode=types.ParseMode.MARKDOWN, reply_markup=keyboard)
 
 @dp.message_handler(commands=['get_chat_id'])
 async def get_chat_id(message: types.Message):
