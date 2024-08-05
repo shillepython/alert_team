@@ -11,7 +11,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from datetime import datetime
 
-API_TOKEN = '6994376547:AAESH4_TogYWVB5dldZCbZ6ThMefkXJVfKk'
+API_TOKEN = '7037813515:AAGOQxlALQBuNmOn3KxvM3r1q78Nd6D9Ews'
 CHAT_ID = '-1001996234864'
 
 # API_TOKEN = '6994376547:AAESH4_TogYWVB5dldZCbZ6ThMefkXJVfKk'
