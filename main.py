@@ -166,6 +166,9 @@ async def send_stats_keyboard(message: types.Message, is_admin: bool):
 # Start command with keyboard
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
+    if str(message.chat.id) == CHAT_ID:
+        return
+
     user_id = message.from_user.id
     if not await is_registered(user_id):
         await message.reply(
@@ -247,12 +250,13 @@ async def process_proof_image(message: types.Message, state: FSMContext):
 # /card command
 @dp.message_handler(lambda message: message.text.startswith('💳 Карта') or message.text.startswith('/card'))
 async def get_card(message: types.Message):
-    if not await is_registered(message.from_user.id):
-        await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
-        return
-    if not await is_approved_user(message.from_user.id):
-        await message.reply("Ваш запрос на вступление в команду находится на рассмотрении, пожалуйста ожидайте.")
-        return
+    if str(message.chat.id) != CHAT_ID:
+        if not await is_registered(message.from_user.id):
+            await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
+            return
+        if not await is_approved_user(message.from_user.id):
+            await message.reply("Ваш запрос на вступление в команду находится на рассмотрении, пожалуйста ожидайте.")
+            return
 
     async with aiosqlite.connect('database.db') as db:
         async with db.execute('SELECT card_name, card, bank_name FROM cards ORDER BY id DESC LIMIT 1') as cursor:
@@ -274,6 +278,8 @@ async def get_card(message: types.Message):
 # /setcard command
 @dp.message_handler(commands=['setcard'])
 async def set_card(message: types.Message):
+    if str(message.chat.id) == CHAT_ID:
+        return
     if not await is_registered(message.from_user.id):
         await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
         return
@@ -310,6 +316,8 @@ async def set_card(message: types.Message):
 
 @dp.message_handler(commands=['addearn'])
 async def add_earn_start(message: types.Message):
+    if str(message.chat.id) == CHAT_ID:
+        return
     if not await is_registered(message.from_user.id):
         await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
         return
@@ -418,12 +426,13 @@ async def cancel(callback_query: CallbackQuery):
 # /todayearnings command
 @dp.message_handler(lambda message: message.text.startswith('💸 Доход за сегодня')  or message.text.startswith('/todayearnings'))
 async def today_earnings(message: types.Message):
-    if not await is_registered(message.from_user.id):
-        await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
-        return
-    if not await is_approved_user(message.from_user.id):
-        await message.reply("Ваш запрос на вступление в команду находится на рассмотрении, пожалуйста ожидайте.")
-        return
+    if str(message.chat.id) != CHAT_ID:
+        if not await is_registered(message.from_user.id):
+            await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
+            return
+        if not await is_approved_user(message.from_user.id):
+            await message.reply("Ваш запрос на вступление в команду находится на рассмотрении, пожалуйста ожидайте.")
+            return
 
     today = datetime.now().strftime("%Y-%m-%d")
     async with aiosqlite.connect('database.db') as db:
@@ -435,6 +444,8 @@ async def today_earnings(message: types.Message):
 # /stats command
 @dp.message_handler(lambda message: message.text.startswith('ℹ️ Статистика'))
 async def stats(message: types.Message):
+    if str(message.chat.id) == CHAT_ID:
+        return
     if not await is_registered(message.from_user.id):
         await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
         return
@@ -470,6 +481,8 @@ async def stats(message: types.Message):
 # /unpaid command for admin
 @dp.message_handler(commands=['unpaid'])
 async def unpaid(message: types.Message):
+    if str(message.chat.id) == CHAT_ID:
+        return
     user_id = message.from_user.id
     if user_id in ALLOWED_USER_IDS:
         async with aiosqlite.connect('database.db') as db:
@@ -521,6 +534,8 @@ async def process_callback_paid(callback_query: CallbackQuery):
 
 @dp.message_handler(commands=['approve'])
 async def approve(message: types.Message):
+    if str(message.chat.id) == CHAT_ID:
+        return
     user_id = message.from_user.id
     if user_id in ALLOWED_USER_IDS:
         async with aiosqlite.connect('database.db') as db:
