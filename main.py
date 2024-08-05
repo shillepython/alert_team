@@ -11,7 +11,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from datetime import datetime
 
-API_TOKEN = '7037813515:AAGOQxlALQBuNmOn3KxvM3r1q78Nd6D9Ews'
+API_TOKEN = '6994376547:AAESH4_TogYWVB5dldZCbZ6ThMefkXJVfKk'
 CHAT_ID = '-1001996234864'
 
 # API_TOKEN = '6994376547:AAESH4_TogYWVB5dldZCbZ6ThMefkXJVfKk'
@@ -241,7 +241,7 @@ async def process_proof_image(message: types.Message, state: FSMContext):
     await send_stats_keyboard(message, message.from_user.id in ALLOWED_USER_IDS)
 
 # /card command
-@dp.message_handler(lambda message: message.text.startswith('💳 Карта'))
+@dp.message_handler(lambda message: message.text.startswith('💳 Карта') or message.text.startswith('/card'))
 async def get_card(message: types.Message):
     if not await is_registered(message.from_user.id):
         await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
@@ -399,7 +399,7 @@ async def cancel(callback_query: CallbackQuery):
 
 
 # /todayearnings command
-@dp.message_handler(lambda message: message.text.startswith('💸 Доход за сегодня'))
+@dp.message_handler(lambda message: message.text.startswith('💸 Доход за сегодня')  or message.text.startswith('/todayearnings'))
 async def today_earnings(message: types.Message):
     if not await is_registered(message.from_user.id):
         await message.reply("Вы не зарегистрированы. Пожалуйста, используйте команду /start для регистрации.")
