@@ -1,5 +1,3 @@
-import logging
-
 import aiogram
 import aiosqlite
 import gspread
@@ -15,6 +13,10 @@ from datetime import datetime
 
 API_TOKEN = '7037813515:AAGOQxlALQBuNmOn3KxvM3r1q78Nd6D9Ews'
 CHAT_ID = '-1001996234864'
+
+# API_TOKEN = '6994376547:AAESH4_TogYWVB5dldZCbZ6ThMefkXJVfKk'
+# CHAT_ID = '-4273210541'
+
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
@@ -82,7 +84,8 @@ class AddEarning(StatesGroup):
 @dp.message_handler(content_types=types.ContentType.NEW_CHAT_MEMBERS)
 async def welcome_new_member(message: types.Message):
     for new_member in message.new_chat_members:
-        await message.answer(f"Добро пожаловать, {new_member.first_name}!")
+        link = f"[{new_member.first_name}](https://t.me/{new_member.username})"
+        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.", parse_mode=types.ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=['get_chat_id'])
 async def get_chat_id(message: types.Message):
@@ -429,13 +432,18 @@ async def stats(message: types.Message):
             row = await cursor.fetchone()
             today_earnings = row[0] if row[0] is not None else 0
 
+        async with db.execute('SELECT SUM(total_amount) FROM earnings WHERE date LIKE ? AND username = (SELECT username FROM users WHERE telegram_id = ?)', (f'{today}%', message.from_user.id)) as cursor:
+            row = await cursor.fetchone()
+            today_total_earnings = row[0] if row[0] is not None else 0
+
         async with db.execute('SELECT SUM(user_amount) FROM earnings WHERE username = (SELECT username FROM users WHERE telegram_id = ?) AND user_amount > 0 AND status = "не выплачено"', (message.from_user.id,)) as cursor:
             row = await cursor.fetchone()
             total_unpaid = row[0] if row[0] is not None else 0
 
         await message.reply(f"📊 Ваша статистика:\n"
-                            f"🤑 Завёл за все время: {total_earnings:.2f}\n"
-                            f"💰 Доход за сегодня: {today_earnings:.2f}\n"
+                            f"🤑 Общая сумма профитов за все время: {total_earnings:.2f}\n"
+                            f"💵 Общая сумма профитов за сегодня: {today_total_earnings:.2f}\n\n"
+                            f"💰 Твой доход за сегодня: {today_earnings:.2f}\n"
                             f"💸 Сумма, что не выплачена: {total_unpaid:.2f}\n\n"
                             f"ℹ️ Выплаты производят админы в порядке очереди, бот вас оповестит как произойдёт выплата.")
 
