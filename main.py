@@ -88,7 +88,7 @@ async def welcome_new_member(message: types.Message):
             link = f"[{new_member.first_name}](https://t.me/{new_member.username})"
         else:
             link = new_member.first_name
-        await message.answer(f"Добро пожаловать, {link}!", parse_mode=types.ParseMode.MARKDOWN)
+        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.", parse_mode=types.ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=['get_chat_id'])
 async def get_chat_id(message: types.Message):
