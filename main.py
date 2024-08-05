@@ -88,7 +88,7 @@ async def welcome_new_member(message: types.Message):
             link = f"[{new_member.first_name}](https://t.me/{new_member.username})"
         else:
             link = new_member.first_name
-        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.", parse_mode=types.ParseMode.MARKDOWN)
+        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.\nЕсли у вас остались вопросы - напишите @moneyimperiaa", parse_mode=types.ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=['get_chat_id'])
 async def get_chat_id(message: types.Message):
@@ -286,6 +286,19 @@ async def set_card(message: types.Message):
                 await db.execute('INSERT INTO cards (card_name, card, bank_name) VALUES (?, ?, ?)', (card_name, card, bank_name))
                 await db.commit()
             await message.reply(f"Карта обновлена на: {card_name} - {card} - {bank_name}")
+
+            async with db.execute('SELECT card_name, card, bank_name FROM cards ORDER BY id DESC LIMIT 1') as cursor:
+                row = await cursor.fetchone()
+                card_name, card, bank_name = row
+            await bot.send_message(CHAT_ID, f'''⚠️Карта обновлена⚠️
+💳 Карты для переводов
+
+🇷🇺{card}
+├ От 100
+├ {card_name}
+└ {bank_name}
+
+    ⚠️ Осторожно, вам может написать фейк, актуальные реквизиты указаны исключительно в этом сообщении. Будьте внимательны и отправляйте чеки в лс @papa_payments''')
         else:
             await message.reply("Пожалуйста введите карту в таком формате. Используйте: /setcard <card_name> <card> <bank_name>")
     else:
