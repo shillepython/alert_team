@@ -79,6 +79,10 @@ class AddEarning(StatesGroup):
     search = State()
     amount = State()
 
+@dp.message_handler(content_types=types.ContentType.NEW_CHAT_MEMBERS)
+async def welcome_new_member(message: types.Message):
+    for new_member in message.new_chat_members:
+        await message.answer(f"Добро пожаловать, @{new_member.username}!")
 
 @dp.message_handler(commands=['get_chat_id'])
 async def get_chat_id(message: types.Message):
