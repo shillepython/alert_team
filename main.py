@@ -84,8 +84,11 @@ class AddEarning(StatesGroup):
 @dp.message_handler(content_types=types.ContentType.NEW_CHAT_MEMBERS)
 async def welcome_new_member(message: types.Message):
     for new_member in message.new_chat_members:
-        link = f"[{new_member.first_name}](https://t.me/{new_member.username})"
-        await message.answer(f"Добро пожаловать, {link}!\nТы можешь ознакомиться с информацией в первом закреплённом сообщение, там есть всё для начала твоей работы.", parse_mode=types.ParseMode.MARKDOWN)
+        if new_member.username:
+            link = f"[{new_member.first_name}](https://t.me/{new_member.username})"
+        else:
+            link = new_member.first_name
+        await message.answer(f"Добро пожаловать, {link}!", parse_mode=types.ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=['get_chat_id'])
 async def get_chat_id(message: types.Message):
