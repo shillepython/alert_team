@@ -1,4 +1,5 @@
 import aiogram
+import logging
 import aiosqlite
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -18,10 +19,13 @@ CHAT_ID = '-1001996234864'
 # CHAT_ID = '-4273210541'
 
 # Initialize bot and dispatcher
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=API_TOKEN, timeout=220)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 dp.middleware.setup(LoggingMiddleware())
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Allowed user IDs for admin commands
 ALLOWED_USER_IDS = [6385046213, 7259097535]
@@ -593,7 +597,12 @@ async def process_reject(callback_query: CallbackQuery):
     await bot.delete_message(callback_query.message.chat.id, callback_query.message.message_id)
 
 if __name__ == '__main__':
+    logger.info("Starting bot...")
+    start_time = datetime.now()
     import asyncio
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(init_db())
+    # loop.run_until_complete(init_db())
     executor.start_polling(dp, skip_updates=True)
+
+    end_time = datetime.now()
+    logger.info(f"Bot fully started in {end_time - start_time}")
